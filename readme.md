@@ -1,6 +1,6 @@
 #**nimAES**
->Advanced Encryption Standard
->Rinjdael Algorithm written in Nim
+###Advanced Encryption Standard
+####Rinjdael Algorithm written in Nim
 
 example:
 
@@ -18,14 +18,15 @@ if aes.setEncodeKey(key):
 both setEncodeKey and setDecodeKey accept 128, 192, and 256 bits key length
 
 supported mode:
-| MODE   | Codec Pair | IV 16 bytes |     IO     | EncKey | DecKey |
+
+| MODE | Codec Pair | IV 16 bytes | IO | EncKey | DecKey |
 |--------|------------|-------------|:----------:|--------|--------|
-| ECB    |     yes    |      no     | 1 block    |   yes  |   yes  |
-| CBC    |     yes    |     yes     | n x blocks |   yes  |   yes  |
-| CFB128 |     yes    |     yes     | n x blocks |   yes  |   no   |
-| CFB8   |     yes    |     yes     | n x blocks |   yes  |   no   |
-| CTR    |     no     |     yes     | stream     |   yes  |   no   |
-| OFB    |     no     |     yes     | n x blocks |   yes  |   no   |
+| ECB | yes | no | 1 block | yes | yes |
+| CBC | yes | yes | n x blocks | yes | yes |
+| CFB128 | yes | yes | n x blocks | yes | no |
+| CFB8 | yes | yes | n x blocks | yes | no |
+| CTR | no | yes | stream | yes | no |
+| OFB | no | yes | n x blocks | yes | no |
 
 output length always same with input length
 
