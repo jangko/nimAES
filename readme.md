@@ -34,6 +34,8 @@ output length always same with input length
 
 CTR mode accept arbitrary input length
 
+IV = Initialization Vector
+
 Codec Pair:
 
  - yes: have encrypt and decrypt
