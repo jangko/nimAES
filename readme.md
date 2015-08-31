@@ -2,6 +2,8 @@
 ###Advanced Encryption Standard
 ####Rinjdael Algorithm written in Nim
 
+initially this was part of [nimPDF](https://github.com/jangko/nimpdf) project, then I decided to release it separately
+
 example:
 
 ```nimrod
