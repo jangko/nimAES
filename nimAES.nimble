@@ -1,6 +1,6 @@
 [Package]
 name          = "nimAES"
-version       = "0.1.0"
+version       = "0.1.1"
 author        = "Andri Lim"
 description   = "AES encryption algorithm"
 license       = "MIT"

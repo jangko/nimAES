@@ -1,13 +1,4 @@
-import nimAES, strutils, unsigned
-
-proc `$`(x: uint32): string =
-  result = toHex(int((x shr 24) and 0xFF), 2)
-  result.add toHex(int((x shr 16) and 0xFF), 2)
-  result.add toHex(int((x shr 8) and 0xFF), 2)
-  result.add toHex(int(x and 0xFF), 2)
-
-proc `$`(x: uint8): string =
-  result = toHex(int(x), 2)
+import nimAES, strutils
 
 proc testECB() =
   var ctx: AESContext
@@ -264,11 +255,6 @@ proc testCFB128(key: string, vec: openArray[string]) =
     var offset = 0
     let result = ctx.encryptCFB128(offset, iv, input)
     assert result == output
-
-proc toHex(input: string): string =
-  result = ""
-  for c in input:
-    result.add toHex(ord(c), 2)
 
 proc testCTR(key: string, ivc: string, vec: openArray[string]) =
   var ctx: AESContext
