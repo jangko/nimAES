@@ -4,8 +4,7 @@ version       = "0.1.1"
 author        = "Andri Lim"
 description   = "AES encryption algorithm"
 license       = "MIT"
+skipFiles     = @["test.nim"]
 
 [Deps]
 Requires: "nim >= 0.11.2"
-
-skipFiles = @["test.nim"]
