@@ -269,7 +269,38 @@ proc testCTR(key: string, ivc: string, vec: openArray[string]) =
     var offset = 0
     let result = ctx.cryptCTR(offset, iv, input)
     assert result == output
+
+proc testECB2() =
+  var aes = initAES()
+  let input = "0123456789ABCDEF"
+  let key = "FEDCBA9876543210"
+  if aes.setEncodeKey(key):
+    let encrypted = aes.encryptECB(input)
+    if aes.setDecodeKey(key):
+      let decrypted = aes.decryptECB(encrypted)
+      echo decrypted.len
+      echo decrypted
+      assert decrypted == input
     
+proc testCTR_offset() =
+  var cipher = initAES()
+  let key = "abcdefghijklmnop"
+  discard cipher.setEncodeKey(key)
+  
+  let text = "Some text to show that there is no error."
+  echo "Text -> ", text
+  
+  var offset: int = 0
+  var nonce = "0123456701234567"
+  var encrypted = cipher.cryptCTR(offset, nonce, text[0..20])
+  encrypted &= cipher.cryptCTR(offset, nonce, text[21..text.high])
+  echo "Encrypted -> ", encrypted
+  offset = 0
+  nonce = "0123456701234567"
+  var decrypted = cipher.cryptCTR(offset, nonce, encrypted)
+  echo "Decrypted -> ", decrypted
+  assert decrypted == text
+
 proc test() =
   testECB()
   testCBC()
@@ -302,16 +333,9 @@ proc test() =
   testCTR(ctr128key, ctr128iv, ctr128vec)
   testCTR(ctr192key, ctr192iv, ctr192vec)
   testCTR(ctr256key, ctr256iv, ctr256vec)
+  
+  testECB2()
+  testCTR_offset()
   echo "OK"
 
 test()
-var aes = initAES()
-let input = "0123456789ABCDEF"
-let key = "FEDCBA9876543210"
-if aes.setEncodeKey(key):
-  let encrypted = aes.encryptECB(input)
-  if aes.setDecodeKey(key):
-    let decrypted = aes.decryptECB(encrypted)
-    echo decrypted.len
-    echo decrypted
-    assert decrypted == input

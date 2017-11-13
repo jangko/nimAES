@@ -35,12 +35,11 @@ type
     nr: int
     rk: int
     buf: array[0..67, uint32]
+    initialVector: array[16, uint8] # used by ctr mode
 
 proc initAES*(): AESContext =
-  result.nr = 0
-  result.rk = 0
-  for i in 0..result.buf.len-1: result.buf[i] = 0
-  
+  zeroMem(result.addr, sizeof(result))
+
 proc ROTL8(x: uint32): uint32 =
   result = (x shl 8) or (x shr 24)
 
@@ -391,7 +390,7 @@ proc decryptECB*(ctx: AESContext, input: string): string =
   result = newString(16)
   var output = cstring(result)
   ctx.decryptECB(cstring(input), output)
-  
+
 proc cryptOFB*(ctx: AESContext, nonce: var cstring, input: string): string =
   var len = input.len
   if (len mod 16) != 0: return nil
@@ -462,7 +461,7 @@ proc decryptCBC*(ctx: AESContext, iv: cstring, inp: string): string =
 proc decryptCBC*(ctx: AESContext, iv: string, input: string): string =
   assert iv.len == 16
   result = ctx.decryptCBC(cstring(iv), input)
-  
+
 proc encryptCFB128*(ctx: AESContext, iv_off: var int, iv: var cstring, input: string): string =
   var n = iv_off
   var len = input.len
@@ -555,6 +554,7 @@ proc cryptCTR*(ctx: AESContext, nc_off: var int, nonce: var cstring, input: stri
 
   var temp: array[0..15, uint8]
   var stream_block = cast[cstring](addr(temp[0]))
+  copyMem(stream_block, ctx.initialVector[0].unsafeAddr, 16)
   result = newString(len)
 
   while len > 0:
@@ -571,6 +571,7 @@ proc cryptCTR*(ctx: AESContext, nc_off: var int, nonce: var cstring, input: stri
     inc x
 
   nc_off = n
+  copyMem(ctx.initialVector[0].unsafeAddr, stream_block, 16)
 
 proc cryptCTR*(ctx: AESContext, nc_off: var int, nonce: var string, input: string): string =
   assert nonce.len == 16
