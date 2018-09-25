@@ -393,7 +393,7 @@ proc decryptECB*(ctx: AESContext, input: string): string =
 
 proc cryptOFB*(ctx: AESContext, nonce: var cstring, input: string): string =
   var len = input.len
-  if (len mod 16) != 0: return nil
+  if (len mod 16) != 0: return ""
 
   result = newString(len)
   var x = 0
@@ -416,7 +416,7 @@ proc cryptOFB*(ctx: AESContext, nonce: var string, input: string): string =
 
 proc encryptCBC*(ctx: AESContext, iv: cstring, input: string): string =
   var len = input.len
-  if (len mod 16) != 0: return nil
+  if (len mod 16) != 0: return ""
 
   result = newString(len)
   var x = 0
@@ -438,7 +438,7 @@ proc encryptCBC*(ctx: AESContext, iv: string, input: string): string =
 
 proc decryptCBC*(ctx: AESContext, iv: cstring, inp: string): string =
   var len = inp.len
-  if (len mod 16) != 0: return nil
+  if (len mod 16) != 0: return ""
 
   var data = cstring(inp)
   result = newString(len)
