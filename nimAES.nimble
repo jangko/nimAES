@@ -5,4 +5,9 @@ description   = "AES encryption algorithm"
 license       = "MIT"
 skipDirs     = @["tests", "docs"]
 
-requires: "nim >= 0.11.2"
+requires: "nim >= 1.0.6"
+
+task tests, "Run tests":
+  exec "nim -v"
+  exec "nim c -r -d:release tests/test"
+  # exec "nim c -r --gc:arc -d:release tests/test"
