@@ -1,11 +1,11 @@
-import ../nimAES, strutils
+import ../nimAES, strutils, unittest
 
 proc testECB() =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
   var key = "0123456789ABCDEF"
   var text = "hello there hone"
-  assert ctx.setEncodeKey(key) == true
+  check ctx.setEncodeKey(key) == true
 
   var out1 = newString(16)
   var out3 = newString(16)
@@ -13,32 +13,32 @@ proc testECB() =
   var output3 = cstring(out3)
   ctx.encryptECB(cstring(text), output1)
 
-  assert ctx.setDecodeKey(key) == true
+  check ctx.setDecodeKey(key) == true
   ctx.decryptECB(output1, output3)
-  assert out3 == text
+  check out3 == text
 
 proc testCBC() =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
   var key = "0123456789ABCDEF"
   var text = "hello there hone0123456789ABCDEF"
-  assert ctx.setEncodeKey(key) == true
+  check ctx.setEncodeKey(key) == true
   var ivs = repeat(chr(1), 16)
   var iv = cstring(ivs)
   var out1 = ctx.encryptCBC(iv, text)
 
-  assert ctx.setDecodeKey(key) == true
+  check ctx.setDecodeKey(key) == true
   ivs = repeat(chr(1), 16)
   iv = cstring(ivs)
   var out2 = ctx.decryptCBC(iv, out1)
-  assert out2 == text
+  check out2 == text
 
 proc testCFB128() =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
   var key = "0123456789ABCDEF"
   var text = "hello there hone0123456789ABCDEF"
-  assert ctx.setEncodeKey(key) == true
+  check ctx.setEncodeKey(key) == true
   var ivs = repeat(chr(0), 16)
   var iv = cstring(ivs)
   var offset = 0
@@ -48,14 +48,14 @@ proc testCFB128() =
   iv = cstring(ivs)
   offset = 0
   var out2 = ctx.decryptCFB128(offset, iv, out1)
-  assert out2 == text
+  check out2 == text
 
 proc testCFB8() =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
   var key = "0123456789ABCDEF"
   var text = "hello there hone0123456789ABCDEF"
-  assert ctx.setEncodeKey(key) == true
+  check ctx.setEncodeKey(key) == true
   var ivs = repeat(chr(0), 16)
   var iv = cstring(ivs)
   var out1 = ctx.encryptCFB8(iv, text)
@@ -63,14 +63,14 @@ proc testCFB8() =
   ivs = repeat(chr(0), 16)
   iv = cstring(ivs)
   var out2 = ctx.decryptCFB8(iv, out1)
-  assert out2 == text
+  check out2 == text
 
 proc testCTR() =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
   var key = "0123456789ABCDEF"
   var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-  assert ctx.setEncodeKey(key) == true
+  check ctx.setEncodeKey(key) == true
   var offset = 0
   var counter: array[0..15, uint8]
   var nonce = cast[cstring](addr(counter[0]))
@@ -79,7 +79,7 @@ proc testCTR() =
   offset = 0
   zeroMem(addr(counter), sizeof(counter))
   var out2 = ctx.cryptCTR(offset, nonce, out1)
-  assert out2 == text
+  check out2 == text
 
 proc testOFB() =
   var ctx: AESContext
@@ -87,14 +87,14 @@ proc testOFB() =
   var key = "0123456789ABCDEF"
   var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   text.setLen((text.len div 16) * 16) # must be 16 bytes per block
-  assert ctx.setEncodeKey(key) == true
+  check ctx.setEncodeKey(key) == true
   var counter: array[0..15, uint8]
   var nonce = cast[cstring](addr(counter[0]))
   zeroMem(addr(counter), sizeof(counter))
   var out1 = ctx.cryptOFB(nonce, text)
   zeroMem(addr(counter), sizeof(counter))
   var out2 = ctx.cryptOFB(nonce, out1)
-  assert out2 == text
+  check out2 == text
 
 proc pHex(input: string): string =
   result = newString(input.len div 2)
@@ -205,7 +205,7 @@ const
 proc testECB(key: string, vec: openArray[string]) =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
-  assert ctx.setEncodeKey(pHex(key)) == true
+  check ctx.setEncodeKey(pHex(key)) == true
 
   var result = newString(16)
   var res = cstring(result)
@@ -214,12 +214,12 @@ proc testECB(key: string, vec: openArray[string]) =
     let input = pHex(vec[i*2])
     let output = pHex(vec[i*2+1])
     ctx.encryptECB(cstring(input), res)
-    assert result == output
+    check result == output
 
 proc testCBC(key: string, vec: openArray[string]) =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
-  assert ctx.setEncodeKey(pHex(key)) == true
+  check ctx.setEncodeKey(pHex(key)) == true
 
   for i in 0..3:
     let ivs = pHex(vec[i*3])
@@ -227,12 +227,12 @@ proc testCBC(key: string, vec: openArray[string]) =
     let output = pHex(vec[i*3+2])
     var iv = cstring(ivs)
     let result = ctx.encryptCBC(iv, input)
-    assert result == output
+    check result == output
 
 proc testOFB(key: string, vec: openArray[string]) =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
-  assert ctx.setEncodeKey(pHex(key)) == true
+  check ctx.setEncodeKey(pHex(key)) == true
 
   for i in 0..3:
     let ivs = pHex(vec[i*3])
@@ -240,12 +240,12 @@ proc testOFB(key: string, vec: openArray[string]) =
     let output = pHex(vec[i*3+2])
     var iv = cstring(ivs)
     let result = ctx.cryptOFB(iv, input)
-    assert result == output
+    check result == output
 
 proc testCFB128(key: string, vec: openArray[string]) =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
-  assert ctx.setEncodeKey(pHex(key)) == true
+  check ctx.setEncodeKey(pHex(key)) == true
 
   for i in 0..3:
     let ivs = pHex(vec[i*3])
@@ -254,12 +254,12 @@ proc testCFB128(key: string, vec: openArray[string]) =
     var iv = cstring(ivs)
     var offset = 0
     let result = ctx.encryptCFB128(offset, iv, input)
-    assert result == output
+    check result == output
 
 proc testCTR(key: string, ivc: string, vec: openArray[string]) =
   var ctx: AESContext
   zeroMem(addr(ctx), sizeof(ctx))
-  assert ctx.setEncodeKey(pHex(key)) == true
+  check ctx.setEncodeKey(pHex(key)) == true
   var ivs = pHex(ivc)
   var iv  = cstring(ivs)
 
@@ -268,7 +268,7 @@ proc testCTR(key: string, ivc: string, vec: openArray[string]) =
     let output = pHex(vec[i*2+1])
     var offset = 0
     let result = ctx.cryptCTR(offset, iv, input)
-    assert result == output
+    check result == output
 
 proc testECB2() =
   var aes = initAES()
@@ -278,9 +278,7 @@ proc testECB2() =
     let encrypted = aes.encryptECB(input)
     if aes.setDecodeKey(key):
       let decrypted = aes.decryptECB(encrypted)
-      echo decrypted.len
-      echo decrypted
-      assert decrypted == input
+      check decrypted == input
 
 proc testCTR_offset() =
   var cipher = initAES()
@@ -288,54 +286,74 @@ proc testCTR_offset() =
   discard cipher.setEncodeKey(key)
 
   let text = "Some text to show that there is no error."
-  echo "Text -> ", text
-
   var offset: int = 0
   var nonce = "0123456701234567"
   var encrypted = cipher.cryptCTR(offset, nonce, text[0..20])
   encrypted &= cipher.cryptCTR(offset, nonce, text[21..text.high])
-  echo "Encrypted -> ", encrypted
   offset = 0
   nonce = "0123456701234567"
   var decrypted = cipher.cryptCTR(offset, nonce, encrypted)
-  echo "Decrypted -> ", decrypted
-  assert decrypted == text
+  check decrypted == text
 
 proc test() =
-  testECB()
-  testCBC()
-  testCFB128()
-  testCFB8()
-  testCTR()
-  testOFB()
+  suite "Basic":
+    test "Basic ECB":
+      testECB()
+    test "Basic CBC":
+      testCBC()
+    test "Basic CFB128":
+      testCFB128()
+    test "Basic CFB8":
+      testCFB8()
+    test "Basic CTR":
+      testCTR()
+    test "Basic OFB":
+      testOFB()
 
-  echo "ECBvector"
-  testECB(ecb128key, ecb128vec)
-  testECB(ecb192key, ecb192vec)
-  testECB(ecb256key, ecb256vec)
+  suite "ECBvector":
+    test "ecb128":
+      testECB(ecb128key, ecb128vec)
+    test "ecb192":
+      testECB(ecb192key, ecb192vec)
+    test "ecb256":
+      testECB(ecb256key, ecb256vec)
 
-  echo "CBCvector"
-  testCBC(cbc128key, cbc128vec)
-  testCBC(cbc192key, cbc192vec)
-  testCBC(cbc256key, cbc256vec)
+  suite "CBCvector":
+    test "cbc128":
+      testCBC(cbc128key, cbc128vec)
+    test "cbc192":
+      testCBC(cbc192key, cbc192vec)
+    test "cbc256":
+      testCBC(cbc256key, cbc256vec)
 
-  echo "OFBvector"
-  testOFB(ofb128key, ofb128vec)
-  testOFB(ofb192key, ofb192vec)
-  testOFB(ofb256key, ofb256vec)
+  suite "OFBvector":
+    test "ofb128":
+      testOFB(ofb128key, ofb128vec)
+    test "ofb192":
+      testOFB(ofb192key, ofb192vec)
+    test "ofb256":
+      testOFB(ofb256key, ofb256vec)
 
-  echo "CFB128vector"
-  testCFB128(cfb128_128key, cfb128_128vec)
-  testCFB128(cfb128_192key, cfb128_192vec)
-  testCFB128(cfb128_256key, cfb128_256vec)
+  suite "CFB128vector":
+    test "cfb128":
+      testCFB128(cfb128_128key, cfb128_128vec)
+    test "cfb192":
+      testCFB128(cfb128_192key, cfb128_192vec)
+    test "cfb256":
+      testCFB128(cfb128_256key, cfb128_256vec)
 
-  echo "CTRvector"
-  testCTR(ctr128key, ctr128iv, ctr128vec)
-  testCTR(ctr192key, ctr192iv, ctr192vec)
-  testCTR(ctr256key, ctr256iv, ctr256vec)
+  suite "CTRvector":
+    test "ctr128":
+      testCTR(ctr128key, ctr128iv, ctr128vec)
+    test "ctr192":
+      testCTR(ctr192key, ctr192iv, ctr192vec)
+    test "ctr256":
+      testCTR(ctr256key, ctr256iv, ctr256vec)
 
-  testECB2()
-  testCTR_offset()
-  echo "OK"
+  suite "misc":
+    test "ECB2":
+      testECB2()
+    test "CTR offset":
+      testCTR_offset()
 
 test()
