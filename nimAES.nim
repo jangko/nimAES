@@ -141,10 +141,10 @@ proc setEncodeKey*(ctx: var AESContext, key: string): bool =
   if ctx.nr == 10:
     for i in 0..9:
       ctx.buf[RK+4] = ctx.buf[RK+0] xor SBOX.RCON[i] xor
-        uint32(SBOX.FSb[(int(ctx.buf[RK+3] shr 8) and 0xFF)]) xor
-        (uint32(SBOX.FSb[(int(ctx.buf[RK+3] shr 16) and 0xFF)]) shl 8) xor
-        (uint32(SBOX.FSb[(int(ctx.buf[RK+3] shr 24) and 0xFF)]) shl 16) xor
-        (uint32(SBOX.FSb[(int(ctx.buf[RK+3]) and 0xFF)]) shl 24)
+        uint32(SBOX.FSb[(uint32(ctx.buf[RK+3] shr 8) and 0xFF)]) xor
+        (uint32(SBOX.FSb[(uint32(ctx.buf[RK+3] shr 16) and 0xFF)]) shl 8) xor
+        (uint32(SBOX.FSb[(uint32(ctx.buf[RK+3] shr 24) and 0xFF)]) shl 16) xor
+        (uint32(SBOX.FSb[(uint32(ctx.buf[RK+3]) and 0xFF)]) shl 24)
 
       ctx.buf[RK+5] = ctx.buf[RK+1] xor ctx.buf[RK+4]
       ctx.buf[RK+6] = ctx.buf[RK+2] xor ctx.buf[RK+5]
@@ -154,10 +154,10 @@ proc setEncodeKey*(ctx: var AESContext, key: string): bool =
   elif ctx.nr == 12:
     for i in 0..7:
       ctx.buf[RK+6] = ctx.buf[RK+0] xor SBOX.RCON[i] xor
-        uint32(SBOX.FSb[int(ctx.buf[RK+5] shr 8) and 0xFF]) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+5] shr 16) and 0xFF]) shl 8) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+5] shr 24) and 0xFF]) shl 16) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+5]) and 0xFF]) shl 24)
+        uint32(SBOX.FSb[uint32(ctx.buf[RK+5] shr 8) and 0xFF]) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+5] shr 16) and 0xFF]) shl 8) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+5] shr 24) and 0xFF]) shl 16) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+5]) and 0xFF]) shl 24)
 
       ctx.buf[RK+7] = ctx.buf[RK+1] xor ctx.buf[RK+6]
       ctx.buf[RK+8] = ctx.buf[RK+2] xor ctx.buf[RK+7]
@@ -169,20 +169,20 @@ proc setEncodeKey*(ctx: var AESContext, key: string): bool =
   elif ctx.nr == 14:
     for i in 0..6:
       ctx.buf[RK+8] = ctx.buf[RK+0] xor SBOX.RCON[i] xor
-        uint32(SBOX.FSb[int(ctx.buf[RK+7] shr 8) and 0xFF]) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+7] shr 16) and 0xFF]) shl 8) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+7] shr 24) and 0xFF]) shl 16) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+7]) and 0xFF]) shl 24)
+        uint32(SBOX.FSb[uint32(ctx.buf[RK+7] shr 8) and 0xFF]) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+7] shr 16) and 0xFF]) shl 8) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+7] shr 24) and 0xFF]) shl 16) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+7]) and 0xFF]) shl 24)
 
       ctx.buf[RK+9] = ctx.buf[RK+1] xor ctx.buf[RK+8]
       ctx.buf[RK+10] = ctx.buf[RK+2] xor ctx.buf[RK+9]
       ctx.buf[RK+11] = ctx.buf[RK+3] xor ctx.buf[RK+10]
 
       ctx.buf[RK+12] = ctx.buf[RK+4] xor
-        uint32(SBOX.FSb[int(ctx.buf[RK+11]) and 0xFF]) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+11] shr 8) and 0xFF]) shl 8) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+11] shr 16) and 0xFF]) shl 16) xor
-        (uint32(SBOX.FSb[int(ctx.buf[RK+11] shr 24) and 0xFF]) shl 24)
+        uint32(SBOX.FSb[uint32(ctx.buf[RK+11]) and 0xFF]) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+11] shr 8) and 0xFF]) shl 8) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+11] shr 16) and 0xFF]) shl 16) xor
+        (uint32(SBOX.FSb[uint32(ctx.buf[RK+11] shr 24) and 0xFF]) shl 24)
 
       ctx.buf[RK+13] = ctx.buf[RK+5] xor ctx.buf[RK+12]
       ctx.buf[RK+14] = ctx.buf[RK+6] xor ctx.buf[RK+13]
@@ -215,10 +215,10 @@ proc setDecodeKey*(ctx: var AESContext, key: string): bool =
   for i in countdown(ctx.nr-1, 1):
     for j in 0..3:
       let YSK = cty.buf[SK]
-      ctx.buf[RK] = SBOX.RT0[SBOX.FSb[int(YSK) and 0xFF]] xor
-        SBOX.RT1[SBOX.FSb[int(YSK shr 8) and 0xFF]] xor
-        SBOX.RT2[SBOX.FSb[int(YSK shr 16) and 0xFF]] xor
-        SBOX.RT3[SBOX.FSb[int(YSK shr 24) and 0xFF]]
+      ctx.buf[RK] = SBOX.RT0[SBOX.FSb[uint32(YSK) and 0xFF]] xor
+        SBOX.RT1[SBOX.FSb[uint32(YSK shr 8) and 0xFF]] xor
+        SBOX.RT2[SBOX.FSb[uint32(YSK shr 16) and 0xFF]] xor
+        SBOX.RT3[SBOX.FSb[uint32(YSK shr 24) and 0xFF]]
       inc SK
       inc RK
     dec(SK, 8)
@@ -230,53 +230,53 @@ proc setDecodeKey*(ctx: var AESContext, key: string): bool =
   result = true
 
 template AES_FROUND(X0,X1,X2,X3,Y0,Y1,Y2,Y3: typed): untyped =
-  X0 = ctx.buf[RK] xor SBOX.FT0[int(Y0 and 0xFF)] xor
-    SBOX.FT1[int((Y1 shr 8) and 0xFF)] xor
-    SBOX.FT2[int((Y2 shr 16) and 0xFF)] xor
-    SBOX.FT3[int((Y3 shr 24) and 0xFF)]
+  X0 = ctx.buf[RK] xor SBOX.FT0[uint32(Y0 and 0xFF)] xor
+    SBOX.FT1[uint32((Y1 shr 8) and 0xFF)] xor
+    SBOX.FT2[uint32((Y2 shr 16) and 0xFF)] xor
+    SBOX.FT3[uint32((Y3 shr 24) and 0xFF)]
   inc RK
 
-  X1 = ctx.buf[RK] xor SBOX.FT0[int(Y1 and 0xFF)] xor
-    SBOX.FT1[int((Y2 shr 8) and 0xFF)] xor
-    SBOX.FT2[int((Y3 shr 16) and 0xFF)] xor
-    SBOX.FT3[int((Y0 shr 24) and 0xFF)]
+  X1 = ctx.buf[RK] xor SBOX.FT0[uint32(Y1 and 0xFF)] xor
+    SBOX.FT1[uint32((Y2 shr 8) and 0xFF)] xor
+    SBOX.FT2[uint32((Y3 shr 16) and 0xFF)] xor
+    SBOX.FT3[uint32((Y0 shr 24) and 0xFF)]
   inc RK
 
-  X2 = ctx.buf[RK] xor SBOX.FT0[int(Y2 and 0xFF)] xor
-    SBOX.FT1[int((Y3 shr 8) and 0xFF)] xor
-    SBOX.FT2[int((Y0 shr 16) and 0xFF)] xor
-    SBOX.FT3[int((Y1 shr 24) and 0xFF)]
+  X2 = ctx.buf[RK] xor SBOX.FT0[uint32(Y2 and 0xFF)] xor
+    SBOX.FT1[uint32((Y3 shr 8) and 0xFF)] xor
+    SBOX.FT2[uint32((Y0 shr 16) and 0xFF)] xor
+    SBOX.FT3[uint32((Y1 shr 24) and 0xFF)]
   inc RK
 
-  X3 = ctx.buf[RK] xor SBOX.FT0[int(Y3 and 0xFF)] xor
-    SBOX.FT1[int((Y0 shr 8) and 0xFF)] xor
-    SBOX.FT2[int((Y1 shr 16) and 0xFF)] xor
-    SBOX.FT3[int((Y2 shr 24) and 0xFF)]
+  X3 = ctx.buf[RK] xor SBOX.FT0[uint32(Y3 and 0xFF)] xor
+    SBOX.FT1[uint32((Y0 shr 8) and 0xFF)] xor
+    SBOX.FT2[uint32((Y1 shr 16) and 0xFF)] xor
+    SBOX.FT3[uint32((Y2 shr 24) and 0xFF)]
   inc RK
 
 template AES_RROUND(X0,X1,X2,X3,Y0,Y1,Y2,Y3: typed): untyped =
-  X0 = ctx.buf[RK] xor SBOX.RT0[int(Y0 and 0xFF)] xor
-    SBOX.RT1[int((Y3 shr 8) and 0xFF)] xor
-    SBOX.RT2[int((Y2 shr 16) and 0xFF)] xor
-    SBOX.RT3[int((Y1 shr 24) and 0xFF)]
+  X0 = ctx.buf[RK] xor SBOX.RT0[uint32(Y0 and 0xFF)] xor
+    SBOX.RT1[uint32((Y3 shr 8) and 0xFF)] xor
+    SBOX.RT2[uint32((Y2 shr 16) and 0xFF)] xor
+    SBOX.RT3[uint32((Y1 shr 24) and 0xFF)]
   inc RK
 
-  X1 = ctx.buf[RK] xor SBOX.RT0[int(Y1 and 0xFF)] xor
-    SBOX.RT1[int((Y0 shr 8) and 0xFF)] xor
-    SBOX.RT2[int((Y3 shr 16) and 0xFF)] xor
-    SBOX.RT3[int((Y2 shr 24) and 0xFF)]
+  X1 = ctx.buf[RK] xor SBOX.RT0[uint32(Y1 and 0xFF)] xor
+    SBOX.RT1[uint32((Y0 shr 8) and 0xFF)] xor
+    SBOX.RT2[uint32((Y3 shr 16) and 0xFF)] xor
+    SBOX.RT3[uint32((Y2 shr 24) and 0xFF)]
   inc RK
 
-  X2 = ctx.buf[RK] xor SBOX.RT0[int(Y2  and 0xFF)] xor
-    SBOX.RT1[int((Y1 shr 8) and 0xFF)] xor
-    SBOX.RT2[int((Y0 shr 16) and 0xFF)] xor
-    SBOX.RT3[int((Y3 shr 24) and 0xFF)]
+  X2 = ctx.buf[RK] xor SBOX.RT0[uint32(Y2  and 0xFF)] xor
+    SBOX.RT1[uint32((Y1 shr 8) and 0xFF)] xor
+    SBOX.RT2[uint32((Y0 shr 16) and 0xFF)] xor
+    SBOX.RT3[uint32((Y3 shr 24) and 0xFF)]
   inc RK
 
-  X3 = ctx.buf[RK] xor SBOX.RT0[int(Y3 and 0xFF)] xor
-    SBOX.RT1[int((Y2 shr 8) and 0xFF)] xor
-    SBOX.RT2[int((Y1 shr 16) and 0xFF)] xor
-    SBOX.RT3[int((Y0 shr 24) and 0xFF)]
+  X3 = ctx.buf[RK] xor SBOX.RT0[uint32(Y3 and 0xFF)] xor
+    SBOX.RT1[uint32((Y2 shr 8) and 0xFF)] xor
+    SBOX.RT2[uint32((Y1 shr 16) and 0xFF)] xor
+    SBOX.RT3[uint32((Y0 shr 24) and 0xFF)]
   inc RK
 
 proc encryptECB*(ctx: AESContext, input: cstring, output: var cstring) =
@@ -301,27 +301,27 @@ proc encryptECB*(ctx: AESContext, input: cstring, output: var cstring) =
   AES_FROUND(Y0, Y1, Y2, Y3, X0, X1, X2, X3)
 
   X0 = ctx.buf[RK] xor uint32(SBOX.FSb[int(Y0 and 0xFF)]) xor
-    (uint32(SBOX.FSb[int((Y1 shr 8) and 0xFF)]) shl 8) xor
-    (uint32(SBOX.FSb[int((Y2 shr 16) and 0xFF)]) shl 16) xor
-    (uint32(SBOX.FSb[int((Y3 shr 24) and 0xFF)]) shl 24)
+    (uint32(SBOX.FSb[uint32((Y1 shr 8) and 0xFF)]) shl 8) xor
+    (uint32(SBOX.FSb[uint32((Y2 shr 16) and 0xFF)]) shl 16) xor
+    (uint32(SBOX.FSb[uint32((Y3 shr 24) and 0xFF)]) shl 24)
   inc RK
 
   X1 = ctx.buf[RK] xor uint32(SBOX.FSb[int(Y1 and 0xFF)]) xor
-    (uint32(SBOX.FSb[int((Y2 shr 8) and 0xFF)]) shl 8) xor
-    (uint32(SBOX.FSb[int((Y3 shr 16) and 0xFF)]) shl 16) xor
-    (uint32(SBOX.FSb[int((Y0 shr 24) and 0xFF)]) shl 24)
+    (uint32(SBOX.FSb[uint32((Y2 shr 8) and 0xFF)]) shl 8) xor
+    (uint32(SBOX.FSb[uint32((Y3 shr 16) and 0xFF)]) shl 16) xor
+    (uint32(SBOX.FSb[uint32((Y0 shr 24) and 0xFF)]) shl 24)
   inc RK
 
   X2 = ctx.buf[RK] xor uint32(SBOX.FSb[int(Y2 and 0xFF)]) xor
-    (uint32(SBOX.FSb[int((Y3 shr 8) and 0xFF)]) shl 8) xor
-    (uint32(SBOX.FSb[int((Y0 shr 16) and 0xFF)]) shl 16) xor
-    (uint32(SBOX.FSb[int((Y1 shr 24) and 0xFF)]) shl 24)
+    (uint32(SBOX.FSb[uint32((Y3 shr 8) and 0xFF)]) shl 8) xor
+    (uint32(SBOX.FSb[uint32((Y0 shr 16) and 0xFF)]) shl 16) xor
+    (uint32(SBOX.FSb[uint32((Y1 shr 24) and 0xFF)]) shl 24)
   inc RK
 
   X3 = ctx.buf[RK] xor uint32(SBOX.FSb[int(Y3 and 0xFF)]) xor
-    (uint32(SBOX.FSb[int((Y0 shr 8) and 0xFF)]) shl 8) xor
-    (uint32(SBOX.FSb[int((Y1 shr 16) and 0xFF)]) shl 16) xor
-    (uint32(SBOX.FSb[int((Y2 shr 24) and 0xFF)]) shl 24)
+    (uint32(SBOX.FSb[uint32((Y0 shr 8) and 0xFF)]) shl 8) xor
+    (uint32(SBOX.FSb[uint32((Y1 shr 16) and 0xFF)]) shl 16) xor
+    (uint32(SBOX.FSb[uint32((Y2 shr 24) and 0xFF)]) shl 24)
 
   PUT_ULONG_LE(X0, output, 0)
   PUT_ULONG_LE(X1, output, 4)
@@ -356,27 +356,27 @@ proc decryptECB*(ctx: AESContext, input: cstring, output: var cstring) =
   AES_RROUND(Y0, Y1, Y2, Y3, X0, X1, X2, X3)
 
   X0 = ctx.buf[RK] xor uint32(SBOX.RSb[int(Y0 and 0xFF)]) xor
-    (uint32(SBOX.RSb[int((Y3 shr 8) and 0xFF)]) shl 8) xor
-    (uint32(SBOX.RSb[int((Y2 shr 16) and 0xFF)]) shl 16) xor
-    (uint32(SBOX.RSb[int((Y1 shr 24) and 0xFF)]) shl 24)
+    (uint32(SBOX.RSb[uint32((Y3 shr 8) and 0xFF)]) shl 8) xor
+    (uint32(SBOX.RSb[uint32((Y2 shr 16) and 0xFF)]) shl 16) xor
+    (uint32(SBOX.RSb[uint32((Y1 shr 24) and 0xFF)]) shl 24)
   inc RK
 
   X1 = ctx.buf[RK] xor uint32(SBOX.RSb[int(Y1 and 0xFF)]) xor
-    (uint32(SBOX.RSb[int((Y0 shr 8) and 0xFF)]) shl 8) xor
-    (uint32(SBOX.RSb[int((Y3 shr 16) and 0xFF)]) shl 16) xor
-    (uint32(SBOX.RSb[int((Y2 shr 24) and 0xFF)]) shl 24)
+    (uint32(SBOX.RSb[uint32((Y0 shr 8) and 0xFF)]) shl 8) xor
+    (uint32(SBOX.RSb[uint32((Y3 shr 16) and 0xFF)]) shl 16) xor
+    (uint32(SBOX.RSb[uint32((Y2 shr 24) and 0xFF)]) shl 24)
   inc RK
 
   X2 = ctx.buf[RK] xor uint32(SBOX.RSb[int(Y2 and 0xFF)]) xor
-    (uint32(SBOX.RSb[int((Y1 shr 8) and 0xFF)]) shl 8) xor
-    (uint32(SBOX.RSb[int((Y0 shr 16) and 0xFF)]) shl 16) xor
-    (uint32(SBOX.RSb[int((Y3 shr 24) and 0xFF)]) shl 24)
+    (uint32(SBOX.RSb[uint32((Y1 shr 8) and 0xFF)]) shl 8) xor
+    (uint32(SBOX.RSb[uint32((Y0 shr 16) and 0xFF)]) shl 16) xor
+    (uint32(SBOX.RSb[uint32((Y3 shr 24) and 0xFF)]) shl 24)
   inc RK
 
   X3 = ctx.buf[RK] xor uint32(SBOX.RSb[int(Y3 and 0xFF)]) xor
-    (uint32(SBOX.RSb[int((Y2 shr 8) and 0xFF)]) shl 8) xor
-    (uint32(SBOX.RSb[int((Y1 shr 16) and 0xFF)]) shl 16) xor
-    (uint32(SBOX.RSb[int((Y0 shr 24) and 0xFF)]) shl 24)
+    (uint32(SBOX.RSb[uint32((Y2 shr 8) and 0xFF)]) shl 8) xor
+    (uint32(SBOX.RSb[uint32((Y1 shr 16) and 0xFF)]) shl 16) xor
+    (uint32(SBOX.RSb[uint32((Y0 shr 24) and 0xFF)]) shl 24)
 
   PUT_ULONG_LE(X0, output, 0)
   PUT_ULONG_LE(X1, output, 4)
