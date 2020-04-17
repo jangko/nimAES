@@ -23,8 +23,6 @@
 #
 #-------------------------------------
 
-import strutils
-
 type
   AESTable = object
     FSb, RSb: array[0..255, uint8]

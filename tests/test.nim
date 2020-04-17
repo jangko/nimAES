@@ -1,4 +1,4 @@
-import nimAES, strutils
+import ../nimAES, strutils
 
 proc testECB() =
   var ctx: AESContext
@@ -26,7 +26,7 @@ proc testCBC() =
   var ivs = repeat(chr(1), 16)
   var iv = cstring(ivs)
   var out1 = ctx.encryptCBC(iv, text)
-  
+
   assert ctx.setDecodeKey(key) == true
   ivs = repeat(chr(1), 16)
   iv = cstring(ivs)
@@ -95,7 +95,7 @@ proc testOFB() =
   zeroMem(addr(counter), sizeof(counter))
   var out2 = ctx.cryptOFB(nonce, out1)
   assert out2 == text
-  
+
 proc pHex(input: string): string =
   result = newString(input.len div 2)
   for i in 0..result.len-1:
@@ -164,7 +164,7 @@ const
   cfb128_128key = "2b7e151628aed2a6abf7158809cf4f3c"
   cfb128_192key = "8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b"
   cfb128_256key = "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4"
-    
+
   cfb128_128vec = ["000102030405060708090a0b0c0d0e0f", "6bc1bee22e409f96e93d7e117393172a", "3b3fd92eb72dad20333449f8e83cfb4a",
     "3B3FD92EB72DAD20333449F8E83CFB4A", "ae2d8a571e03ac9c9eb76fac45af8e51", "c8a64537a0b3a93fcde3cdad9f1ce58b",
     "C8A64537A0B3A93FCDE3CDAD9F1CE58B", "30c81c46a35ce411e5fbc1191a0a52ef", "26751f67a3cbb140b1808cf187a4f4df",
@@ -262,7 +262,7 @@ proc testCTR(key: string, ivc: string, vec: openArray[string]) =
   assert ctx.setEncodeKey(pHex(key)) == true
   var ivs = pHex(ivc)
   var iv  = cstring(ivs)
-  
+
   for i in 0..3:
     let input = pHex(vec[i*2])
     let output = pHex(vec[i*2+1])
@@ -281,15 +281,15 @@ proc testECB2() =
       echo decrypted.len
       echo decrypted
       assert decrypted == input
-    
+
 proc testCTR_offset() =
   var cipher = initAES()
   let key = "abcdefghijklmnop"
   discard cipher.setEncodeKey(key)
-  
+
   let text = "Some text to show that there is no error."
   echo "Text -> ", text
-  
+
   var offset: int = 0
   var nonce = "0123456701234567"
   var encrypted = cipher.cryptCTR(offset, nonce, text[0..20])
@@ -308,12 +308,12 @@ proc test() =
   testCFB8()
   testCTR()
   testOFB()
-  
+
   echo "ECBvector"
   testECB(ecb128key, ecb128vec)
   testECB(ecb192key, ecb192vec)
   testECB(ecb256key, ecb256vec)
-  
+
   echo "CBCvector"
   testCBC(cbc128key, cbc128vec)
   testCBC(cbc192key, cbc192vec)
@@ -328,12 +328,12 @@ proc test() =
   testCFB128(cfb128_128key, cfb128_128vec)
   testCFB128(cfb128_192key, cfb128_192vec)
   testCFB128(cfb128_256key, cfb128_256vec)
-  
+
   echo "CTRvector"
   testCTR(ctr128key, ctr128iv, ctr128vec)
   testCTR(ctr192key, ctr192iv, ctr192vec)
   testCTR(ctr256key, ctr256iv, ctr256vec)
-  
+
   testECB2()
   testCTR_offset()
   echo "OK"
